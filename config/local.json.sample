@@ -3,7 +3,7 @@
         "httpAuth": "",
         "host": "http://api.staging.4panoramik.com/catalog",
         "index": "vue_storefront_catalog"
-    }
+    },
     "storeViews": {
         "mapStoreUrlsFor": [
             "de",

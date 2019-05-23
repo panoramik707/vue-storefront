@@ -413,6 +413,14 @@
     "usePriceTiers": false,
     "useZeroPriceProduct": true,
     "query": {
+      "trending": {
+        "filter": [
+          {
+            "key": "category.name",
+            "value" : { "eq": "Trending" }
+          }
+        ]
+      },
       "inspirations": {
         "filter": [
           {
