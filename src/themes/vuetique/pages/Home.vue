@@ -15,6 +15,17 @@
       </div>
     </section>
 
+    <section class="new-collection container mb-16" v-if="!!trendingCollection && trendingCollection.length > 0">
+      <div>
+        <header class="mb-6">
+          <h2 class="text-h1 leading-h1 text-center">{{ $t('Trending') }}</h2>
+        </header>
+      </div>
+      <div class="row center-xs">
+        <product-listing columns="4" :products="trendingCollection" />
+      </div>
+    </section>
+
     <promoted-offers collection="smallBanners" :limit="2" :offset="2" :columns="2" class="mt-2 mb-16 sm:my-8" />
 
     <products-slider class="mb-16" :title="$t('Sale and discount')" :products="salesCollection" :config="sliderConfig" />
@@ -79,6 +90,9 @@ export default {
     },
     salesCollection () {
       return this.$store.state.homepage.sales_collection
+    },
+    trendingCollection () {
+      return this.$store.state.homepage.trending_collection
     }
   },
   created () {
@@ -102,8 +116,21 @@ export default {
 
       let newProductsQuery = prepareQuery({ queryConfig: 'newProducts' })
       let salesQuery = prepareQuery({ queryConfig: 'inspirations' })
+      let trendingQuery = prepareQuery({ queryConfig: 'trending' })
 
       store.dispatch('category/list', { includeFields: config.entities.optimize ? config.entities.category.includeFields : null }).then((categories) => {
+        store.dispatch('product/list', {
+          query: trendingQuery,
+          size: 8,
+          sort: 'created_at:desc',
+          includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
+        }).catch(err => {
+          reject(err)
+        }).then((res) => {
+          if (res) {
+            store.state.homepage.trending_collection = res.items
+          }
+        })
         store.dispatch('product/list', {
           query: newProductsQuery,
           size: 8,
@@ -115,7 +142,6 @@ export default {
           if (res) {
             store.state.homepage.new_collection = res.items
           }
-
           store.dispatch('product/list', {
             query: salesQuery,
             size: 12,

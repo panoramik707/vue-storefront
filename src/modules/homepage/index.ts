@@ -5,7 +5,8 @@ const KEY = 'homepage'
 const store = {
   namespaced: true,
   state: {
-    new_collection: []
+    new_collection: [],
+    trending_collection: []
   }
 }
 export const Homepage = createModule({
