@@ -5,14 +5,14 @@
   >
     <router-link
       class="block no-underline product-link"
-      :to="localizedRoute({
+      :to="(!!!product.is_category)? localizedRoute({
         name: product.type_id + '-product',
         params: {
           parentSku: product.parentSku ? product.parentSku : product.sku,
           slug: product.slug,
           childSku: product.sku
         }
-      })"
+      }) : localizedRoute({ name: 'category', params: { id: product.id, slug: product.slug }})"
       data-testid="productLink"
     >
       <div
@@ -113,7 +113,7 @@ export default {
   },
   methods: {
     onProductPriceUpdate (product) {
-      if (product.sku === this.product.sku) {
+      if (product.sku === this.product.sku && !this.product.is_category) {
         Object.assign(this.product, product)
       }
     },
