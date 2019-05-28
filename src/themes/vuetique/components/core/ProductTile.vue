@@ -43,7 +43,7 @@
         {{ product.name | htmlDecode }}
       </p>
 
-      <div class="mt-1 text-grey-dark font-medium">
+      <div class="mt-1 text-grey-dark font-medium" v-if="!!!product.hide_price">
         <span
           class="text-primary mr-2"
           v-if="product.special_price && parseFloat(product.special_price) > 0 && !onlyImage"

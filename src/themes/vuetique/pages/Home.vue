@@ -2,9 +2,9 @@
   <div id="home">
     <main-slider />
 
-    <promoted-offers collection="smallBanners" :limit="2" :columns="2" class="mt-2 mb-16 sm:my-8" />
+    <!-- <promoted-offers collection="smallBanners" :limit="2" :columns="2" class="mt-2 mb-16 sm:my-8" /> -->
 
-    <section class="new-collection container mb-16">
+    <!-- <section class="new-collection container mb-16">
       <div>
         <header class="mb-6">
           <h2 class="text-h1 leading-h1 text-center">{{ $t('Shop new arrivals') }}</h2>
@@ -13,7 +13,7 @@
       <div class="row center-xs">
         <product-listing columns="4" :products="newCollection" />
       </div>
-    </section>
+    </section> -->
 
     <section class="new-collection container mb-16" v-if="!!trendingCollection && trendingCollection.length > 0">
       <div>
@@ -26,18 +26,29 @@
       </div>
     </section>
 
-    <promoted-offers collection="smallBanners" :limit="2" :offset="2" :columns="2" class="mt-2 mb-16 sm:my-8" />
+    <section class="new-collection container mb-16" v-if="!!popularCollection && popularCollection.length > 0">
+      <div>
+        <header class="mb-6">
+          <h2 class="text-h1 leading-h1 text-center">{{ $t('Popular Categories') }}</h2>
+        </header>
+      </div>
+      <div class="row center-xs">
+        <product-listing columns="4" :products="popularCollection" />
+      </div>
+    </section>
 
-    <products-slider class="mb-16" :title="$t('Sale and discount')" :products="salesCollection" :config="sliderConfig" />
+    <!-- <promoted-offers collection="smallBanners" :limit="2" :offset="2" :columns="2" class="mt-2 mb-16 sm:my-8" /> -->
 
-    <section class="container mb-16">
+    <!-- <products-slider class="mb-16" :title="$t('Sale and discount')" :products="salesCollection" :config="sliderConfig" /> -->
+
+    <!-- <section class="container mb-16">
       <div class="justify-center">
         <header class="mb-6">
           <h2 class="text-h1 leading-h1 text-center">{{ $t('Get inspired') }}</h2>
         </header>
       </div>
       <tile-links />
-    </section>
+    </section> -->
     <Onboard/>
 
   </div>
@@ -93,6 +104,9 @@ export default {
     },
     trendingCollection () {
       return this.$store.state.homepage.trending_collection
+    },
+    popularCollection () {
+      return this.$store.state.homepage.popular_collection
     }
   },
   created () {
@@ -111,12 +125,14 @@ export default {
   },
   asyncData ({ store, route }) { // this is for SSR purposes to prefetch data
     const config = store.state.config
+    const concernedCategoriesList = config.concerned_categories_list
     return new Promise((resolve, reject) => {
       Logger.info('Calling asyncData in Home (theme)')()
 
       let newProductsQuery = prepareQuery({ queryConfig: 'newProducts' })
       let salesQuery = prepareQuery({ queryConfig: 'inspirations' })
       let trendingQuery = prepareQuery({ queryConfig: 'trending' })
+      let popularQuery = prepareQuery({ queryConfig: 'popular' })
 
       store.dispatch('category/list', { includeFields: config.entities.optimize ? config.entities.category.includeFields : null }).then((categories) => {
         store.dispatch('product/list', {
@@ -129,6 +145,32 @@ export default {
         }).then((res) => {
           if (res) {
             store.state.homepage.trending_collection = res.items
+          }
+        })
+        store.dispatch('product/list', {
+          query: popularQuery,
+          size: 8,
+          sort: 'created_at:desc',
+          includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
+        }).catch(err => {
+          reject(err)
+        }).then((res) => {
+          if (res) {
+            let concernedCategoriesIds = categories.items.filter(category => concernedCategoriesList.includes(category.name)).map(category => category.id)
+            let items = []
+            res.items.forEach(
+              (item) => {
+                let categoryId = item.category_ids.find(categoryId => concernedCategoriesIds.includes(parseInt(categoryId)))
+                if (!!categoryId && items.find(product => product.id === item.id) === undefined) {
+                  item.name = categories.items.find(category => category.id === parseInt(categoryId)).name
+                  item.hide_price = true
+                  let category = {}
+                  Object.assign(category, item)
+                  items.push(category)
+                }
+              }
+            )
+            store.state.homepage.popular_collection = items
           }
         })
         store.dispatch('product/list', {
