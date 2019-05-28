@@ -155,7 +155,7 @@
       },
       "productList": {
         "sort": "",
-        "includeFields": [ "type_id", "sku", "product_links", "tax_class_id", "special_price", "special_to_date", "special_from_date", "name", "price", "priceInclTax", "originalPriceInclTax", "originalPrice", "specialPriceInclTax", "id", "image", "sale", "new", "url_key", "status", "tier_prices", "configurable_children.sku", "configurable_children.price", "configurable_children.special_price", "configurable_children.priceInclTax", "configurable_children.specialPriceInclTax", "configurable_children.originalPrice", "configurable_children.originalPriceInclTax" ],
+        "includeFields": [ "type_id", "category_ids", "sku", "product_links", "tax_class_id", "special_price", "special_to_date", "special_from_date", "name", "price", "priceInclTax", "originalPriceInclTax", "originalPrice", "specialPriceInclTax", "id", "image", "sale", "new", "url_key", "status", "tier_prices", "configurable_children.sku", "configurable_children.price", "configurable_children.special_price", "configurable_children.priceInclTax", "configurable_children.specialPriceInclTax", "configurable_children.originalPrice", "configurable_children.originalPriceInclTax" ],
         "excludeFields": [ "description", "configurable_options", "sgn", "*.sgn", "msrp_display_actual_price_type", "*.msrp_display_actual_price_type", "required_options" ]
       },
       "productListWithChildren": {
@@ -421,6 +421,14 @@
           }
         ]
       },
+      "popular": {
+        "filter": [
+          {
+            "key": "category.name",
+            "value" : { "eq": "Popular" }
+          }
+        ]
+      },
       "inspirations": {
         "filter": [
           {
@@ -453,7 +461,11 @@
           }
         ]
       }
-    }
-
+    },
+    "concerned_categories_list": [
+       "Tile",
+       "Stone",
+       "Kitchen Cabinets"
+    ]
 }
 
