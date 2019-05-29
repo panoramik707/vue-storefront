@@ -1,6 +1,6 @@
 <template>
   <div id="home">
-    <main-slider />
+    <main-slider :slides="bannersCollection" v-if="!!bannersCollection && bannersCollection.length > 0" />
 
     <!-- <promoted-offers collection="smallBanners" :limit="2" :columns="2" class="mt-2 mb-16 sm:my-8" /> -->
 
@@ -37,6 +37,23 @@
       </div>
     </section>
 
+    <section class="new-collection container mb-16">
+      <div>
+        <header class="mb-6">
+          <h2 class="text-h1 leading-h1 text-center">{{ $t('Installation Materials') }}</h2>
+        </header>
+      </div>
+      <div class="row">
+        <img src="/assets/installation-materials.jpg" alt="">
+      </div>
+    </section>
+
+    <section class="new-collection container mb-16" style="margin-top: 100px;" v-if="!!installationMaterialsCollection && installationMaterialsCollection.length > 0">
+      <div class="row center-xs">
+        <product-listing columns="4" :products="installationMaterialsCollection" />
+      </div>
+    </section>
+
     <!-- <promoted-offers collection="smallBanners" :limit="2" :offset="2" :columns="2" class="mt-2 mb-16 sm:my-8" /> -->
 
     <!-- <products-slider class="mb-16" :title="$t('Sale and discount')" :products="salesCollection" :config="sliderConfig" /> -->
@@ -65,6 +82,8 @@ import Home from '@vue-storefront/core/pages/Home'
 import ProductListing from 'theme/components/core/ProductListing'
 import ProductsSlider from 'theme/components/core/ProductsSlider'
 import MainSlider from 'theme/components/core/blocks/MainSlider/MainSlider'
+
+import { thumbnail } from '../../../../core/mixins/thumbnail'
 
 // Theme local components
 import Onboard from 'theme/components/theme/blocks/Home/Onboard'
@@ -107,6 +126,12 @@ export default {
     },
     popularCollection () {
       return this.$store.state.homepage.popular_collection
+    },
+    bannersCollection () {
+      return this.$store.state.homepage.banners_collection
+    },
+    installationMaterialsCollection () {
+      return this.$store.state.homepage.installation_materials_collection
     }
   },
   created () {
@@ -131,6 +156,8 @@ export default {
 
       let trendingQuery = prepareQuery({ queryConfig: 'trending' })
       let popularQuery = prepareQuery({ queryConfig: 'popular' })
+      let bannersQuery = prepareQuery({ queryConfig: 'banners' })
+      let installationMaterialsQuery = prepareQuery({ queryConfig: 'installation-materials' })
 
       store.dispatch('category/list', { includeFields: config.entities.optimize ? config.entities.category.includeFields : null }).then((categories) => {
         store.dispatch('product/list', {
@@ -177,6 +204,44 @@ export default {
           }
           return resolve()
         })
+
+        store.dispatch('product/list', {
+          query: installationMaterialsQuery,
+          size: 8,
+          sort: 'created_at:desc',
+          includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
+        }).catch(err => {
+          reject(err)
+        }).then((res) => {
+          if (res) {
+            store.state.homepage.installation_materials_collection = res.items
+          }
+          return resolve()
+        })
+
+        store.dispatch('product/list', {
+          query: bannersQuery,
+          size: 8,
+          sort: 'created_at:desc',
+          includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
+        }).catch(err => {
+          reject(err)
+        }).then((res) => {
+          console.log(res.items)
+          if (res) {
+            store.state.homepage.banners_collection = res.items.map(
+              (item) => {
+                return {
+                  image: thumbnail.methods.getThumbnail(item.image, 960, 320),
+                  title: item.name,
+                  link: item.banner_url,
+                  button_text: 'Click Here'
+                }
+              }
+            )
+          }
+          return resolve()
+        })
       }).catch(err => {
         reject(err)
       })
@@ -184,3 +249,28 @@ export default {
   }
 }
 </script>
+
+<style>
+.slide-content {
+  height: 640px;
+}
+@media (max-width: 75em) {
+  .main-slider {
+    height: 400px;
+  }
+  .slide-content {
+    height: 400px;
+  }
+}
+@media (max-width: 64em) {
+  .main-slider {
+    height: 359px;
+  }
+  .slide {
+    background-position: left;
+  }
+  .slide-content {
+    height: 359px;
+  }
+}
+</style>
