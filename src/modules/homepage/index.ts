@@ -8,7 +8,8 @@ const store = {
     new_collection: [],
     trending_collection: [],
     popular_collection: [],
-    banners_collection: []
+    banners_collection: [],
+    installation_materials_collection: []
   }
 }
 export const Homepage = createModule({

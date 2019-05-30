@@ -44,7 +44,11 @@
         </header>
       </div>
       <div class="row">
-        <img src="/assets/installation-materials.jpg" alt="">
+        <router-link
+          :to="localizedRoute({ name: 'category', params: { id: installationMaterialsCategory.id, slug: installationMaterialsCategory.slug }})"
+        >
+          <img src="/assets/installation-materials.jpg" alt="">
+        </router-link>
       </div>
     </section>
 
@@ -132,6 +136,9 @@ export default {
     },
     installationMaterialsCollection () {
       return this.$store.state.homepage.installation_materials_collection
+    },
+    installationMaterialsCategory () {
+      return this.$store.state.homepage.installation_materials_category
     }
   },
   created () {
@@ -160,6 +167,11 @@ export default {
       let installationMaterialsQuery = prepareQuery({ queryConfig: 'installation-materials' })
 
       store.dispatch('category/list', { includeFields: config.entities.optimize ? config.entities.category.includeFields : null }).then((categories) => {
+        store.state.homepage.installation_materials_category = categories.items.find(
+          (category) => {
+            return category.name === 'Installation Materials'
+          }
+        )
         store.dispatch('product/list', {
           query: popularQuery,
           size: 8,
