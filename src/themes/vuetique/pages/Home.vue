@@ -173,37 +173,6 @@ export default {
           }
         )
         store.dispatch('product/list', {
-          query: popularQuery,
-          size: 8,
-          sort: 'created_at:desc',
-          includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
-        }).catch(err => {
-          reject(err)
-        }).then((res) => {
-          if (res) {
-            let concernedCategoriesIds = categories.items.filter(category => concernedCategoriesList.includes(category.name)).map(category => category.id)
-            let items = []
-            res.items.forEach(
-              (item) => {
-                let categoryId = item.category_ids.find(categoryId => concernedCategoriesIds.includes(parseInt(categoryId)))
-                if (!!categoryId && items.find(product => product.id === item.id) === undefined) {
-                  item.id = parseInt(categoryId)
-                  item.slug = categories.items.find(category => category.id === parseInt(categoryId)).slug
-                  item.name = categories.items.find(category => category.id === parseInt(categoryId)).name
-                  item.hide_price = true
-                  item.is_category = true
-                  let category = {}
-                  Object.assign(category, item)
-                  items.push(category)
-                }
-              }
-            )
-            store.state.homepage.popular_collection = items
-          }
-          return resolve()
-        })
-
-        store.dispatch('product/list', {
           query: trendingQuery,
           size: 8,
           sort: 'created_at:desc',
@@ -214,45 +183,69 @@ export default {
           if (res) {
             store.state.homepage.trending_collection = res.items
           }
-          return resolve()
-        })
-
-        store.dispatch('product/list', {
-          query: installationMaterialsQuery,
-          size: 8,
-          sort: 'created_at:desc',
-          includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
-        }).catch(err => {
-          reject(err)
-        }).then((res) => {
-          if (res) {
-            store.state.homepage.installation_materials_collection = res.items
-          }
-          return resolve()
-        })
-
-        store.dispatch('product/list', {
-          query: bannersQuery,
-          size: 8,
-          sort: 'created_at:desc',
-          includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
-        }).catch(err => {
-          reject(err)
-        }).then((res) => {
-          console.log(res.items)
-          if (res) {
-            store.state.homepage.banners_collection = res.items.map(
-              (item) => {
-                return {
-                  image: thumbnail.methods.getThumbnail(item.image, 960, 320),
-                  title: item.name,
-                  link: item.banner_url,
-                  button_text: 'Click Here'
+          store.dispatch('product/list', {
+            query: popularQuery,
+            size: 8,
+            sort: 'created_at:desc',
+            includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
+          }).catch(err => {
+            reject(err)
+          }).then((res) => {
+            if (res) {
+              let concernedCategoriesIds = categories.items.filter(category => concernedCategoriesList.includes(category.name)).map(category => category.id)
+              let items = []
+              res.items.forEach(
+                (item) => {
+                  let categoryId = item.category_ids.find(categoryId => concernedCategoriesIds.includes(parseInt(categoryId)))
+                  if (!!categoryId && items.find(product => product.id === item.id) === undefined) {
+                    item.id = parseInt(categoryId)
+                    item.slug = categories.items.find(category => category.id === parseInt(categoryId)).slug
+                    item.name = categories.items.find(category => category.id === parseInt(categoryId)).name
+                    item.hide_price = true
+                    item.is_category = true
+                    let category = {}
+                    Object.assign(category, item)
+                    items.push(category)
+                  }
                 }
+              )
+              store.state.homepage.popular_collection = items
+            }
+            store.dispatch('product/list', {
+              query: installationMaterialsQuery,
+              size: 8,
+              sort: 'created_at:desc',
+              includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
+            }).catch(err => {
+              reject(err)
+            }).then((res) => {
+              if (res) {
+                store.state.homepage.installation_materials_collection = res.items
               }
-            )
-          }
-          return resolve()
+              store.dispatch('product/list', {
+                query: bannersQuery,
+                size: 8,
+                sort: 'created_at:desc',
+                includeFields: config.entities.optimize ? (config.products.setFirstVarianAsDefaultInURL ? config.entities.productListWithChildren.includeFields : config.entities.productList.includeFields) : []
+              }).catch(err => {
+                reject(err)
+              }).then((res) => {
+                if (res) {
+                  store.state.homepage.banners_collection = res.items.map(
+                    (item) => {
+                      return {
+                        image: thumbnail.methods.getThumbnail(item.image, 960, 320),
+                        title: item.name,
+                        link: item.banner_url,
+                        button_text: 'Click Here'
+                      }
+                    }
+                  )
+                }
+                return resolve()
+              })
+            })
+          })
         })
       }).catch(err => {
         reject(err)
