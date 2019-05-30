@@ -15,7 +15,7 @@
       </div>
     </section> -->
 
-    <section class="new-collection container mb-16" style="margin-top: 100px;">
+    <section class="new-collection container mb-16" style="margin-top: 100px;" v-if="!!trendingCollection && trendingCollection.length > 0">
       <div>
         <header class="mb-6">
           <h2 class="text-h1 leading-h1 text-center">{{ $t('Trending') }}</h2>
