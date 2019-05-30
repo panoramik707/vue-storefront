@@ -9,7 +9,7 @@
                 <h1 class="text-hero mt-0 mb-8 text-center" data-testid="mainSliderTitle">
                   {{ slide.title }}
                 </h1>
-                <div class="mx-auto w-48">
+                <div class="mx-auto w-48" v-if="!!slide.link">
                   <button-full :link="{path: slide.link}" class="btn-primary">
                     {{ slide.button_text }}
                   </button-full>
@@ -27,15 +27,19 @@
 import NoSSR from 'vue-no-ssr'
 import { Carousel, Slide } from 'vue-carousel'
 import sliderData from 'theme/resource/slider.json'
-
 import ButtonFull from 'theme/components/theme/ButtonFull'
 
 export default {
   data () {
     return {
       currentSlide: 1,
-      slides: [],
       totalSlides: 1
+    }
+  },
+  props: {
+    slides: {
+      type: Array,
+      required: true
     }
   },
   components: {
@@ -46,8 +50,7 @@ export default {
   },
   methods: {
     updateSliderData (data) {
-      this.slides = data.slides
-      this.totalSlides = data.total
+      this.totalSlides = this.slides.length
     }
   },
   mounted () {

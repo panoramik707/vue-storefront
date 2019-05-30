@@ -7,7 +7,8 @@ const store = {
   state: {
     new_collection: [],
     trending_collection: [],
-    popular_collection: []
+    popular_collection: [],
+    banners_collection: []
   }
 }
 export const Homepage = createModule({
