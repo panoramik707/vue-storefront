@@ -62,6 +62,7 @@
         <div class="flex flex-wrap -mx-3">
           <div class="w-full lg:w-1/2 px-3">
             <slot name="placeOrderButton">
+              <paypal-button v-if="payment.paymentMethod === 'vsfpaypal'"/>
               <button-full
                 @click.native="placeOrder"
                 data-testid="orderReviewSubmit"
@@ -107,7 +108,7 @@
 <script>
 import { required } from 'vuelidate/lib/validators'
 import Composite from '@vue-storefront/core/mixins/composite'
-
+import PaypalButton from './Button'
 import BaseCheckbox from 'theme/components/core/blocks/Form/BaseCheckbox'
 import ButtonFull from 'theme/components/theme/ButtonFull'
 import CartSummary from 'theme/components/core/blocks/Checkout/CartSummary'
@@ -120,6 +121,7 @@ export default {
     BaseCheckbox,
     ButtonFull,
     CartSummary,
+    PaypalButton,
     Modal,
     ValidationError
   },
@@ -129,6 +131,11 @@ export default {
       terms: {
         required
       }
+    }
+  },
+  data () {
+    return {
+      payment: this.$store.state.checkout.paymentDetails
     }
   },
   methods: {
