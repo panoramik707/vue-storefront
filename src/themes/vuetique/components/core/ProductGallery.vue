@@ -1,7 +1,7 @@
 <template>
   <div class="media-gallery">
     <product-gallery-zoom
-      v-if="isZoomOpen"
+      v-if="gallery.length > 1 && isZoomOpen"
       :current="$refs.carousel.currentPage"
       :title="product.name"
       :gallery="gallery"
@@ -16,8 +16,8 @@
         <div v-if="gallery.length === 1">
           <transition name="fade" appear>
             <img
-              :src="defaultImage.src"
-              v-lazy="defaultImage"
+              :src="gallery[0].src"
+              v-lazy="gallery[0]"
               class="mw-100 cursor-pointer"
               ref="defaultImage"
               :alt="product.name | htmlDecode"
