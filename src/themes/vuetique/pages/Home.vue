@@ -16,7 +16,7 @@
     </section> -->
 
     <section class="new-collection container mb-16" style="margin-top: 100px;" v-if="!!trendingCollection && trendingCollection.length > 0">
-      <div>
+      <div class="heading">
         <header class="mb-6">
           <h2 class="text-h1 leading-h1 text-center">{{ $t('Trending') }}</h2>
         </header>
@@ -27,7 +27,7 @@
     </section>
 
     <section class="new-collection container mb-16" v-if="!!popularCollection && popularCollection.length > 0">
-      <div>
+      <div class="heading">
         <header class="mb-6">
           <h2 class="text-h1 leading-h1 text-center">{{ $t('Popular Categories') }}</h2>
         </header>
@@ -38,7 +38,7 @@
     </section>
 
     <section class="new-collection container mb-16">
-      <div>
+      <div class="heading">
         <header class="mb-6">
           <h2 class="text-h1 leading-h1 text-center">{{ $t('Installation Materials') }}</h2>
         </header>
@@ -256,6 +256,13 @@ export default {
 </script>
 
 <style>
+.heading {
+  background-color: #4fce76;
+  border-radius: 4px;
+}
+.heading header {
+  color: white;
+}
 .slide-content {
   height: 640px;
 }
